@@ -10,7 +10,7 @@ name:  Push Task
 on:
 
   push:
-    branches: [ main ]
+    branches: [ main, master ]
 
   
   schedule:
