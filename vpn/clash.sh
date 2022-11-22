@@ -59,9 +59,9 @@ cp -r vpn/index.html archive/vpn/
 
 
 
-
+sleep 0.5
 ### 退出程序 subconverter 与 vpn parser
-# curl http://127.0.0.1:25505/exit
-# sleep 0.5
-# curl http://127.0.0.1:25500/exit
-exit
+curl http://127.0.0.1:25505/exit
+sleep 0.5
+curl http://127.0.0.1:25500/exit
+
