@@ -184,36 +184,23 @@ jobs:
 
 
     - name: UnZip
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo $GITHUB_TOKEN
-        curl -vLJO -H 'Authorization: $GITHUB_TOKEN' 'https://github.com/RANSAA/AutoTask/releases/download/untagged-3074773ba9d87ceeba48/archive.zip' archive.zip
+        wget https://github.com/ctsfork/AutoTask/releases/download/v0.0.1/archive.zip
         ls -l -a
         unzip archive.zip
         ls -l -a
 
-#     ## 拷贝文件到同步目录中
-#     - name: Copy files to sync
-#       run: |
-#         git pull
-#         mkdir -p sync/bt
-#         cp -R bt/tracker sync/bt/tracker
-#         cp -R bt/index.html sync/bt/
-#         mkdir -p sync/vpn
-#         cp -R vpn/list sync/vpn/list
-#         cp -R vpn/list-yaml sync/vpn/list-yaml
-#         cp -R vpn/index.html sync/vpn/
-#         cp -R README.md sync
-#         echo "<script type="text/javascript">
-#         let appUpdateTime = '$(date '+%Y-%m-%d %H:%M:%S')'
-#         </script>" >> index.html
-#         cp -R index.html sync
 
-#     - name: Unzip archive.zip
-#       run: |
-#         wget "htts:"
 
+    ## 部署到netlify
+    - name: Deploy to netlify
+      uses: netlify/actions/cli@master
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      with:
+        args: deploy --dir=archive --prod
+        secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'    
 
 
 
