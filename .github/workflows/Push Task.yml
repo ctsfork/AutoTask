@@ -15,9 +15,9 @@ on:
   
   schedule:
   # 定时任务，每4小时执行一次
-  # - cron: '0 */4 * * *'
+  - cron: '0 */3 * * *'
   # 定时任务，在每天的13点执行任务
-  - cron: '0 5 * * *'
+  # - cron: '0 5 * * *'
 
 
 
@@ -177,7 +177,7 @@ jobs:
 
 #第二个job，将结果推送到另一个仓库
   deploy: 
-    name: 推送到AutoTaskPush
+    name: 部署到Netlify
     # job执行顺序依赖
     needs: build
 
