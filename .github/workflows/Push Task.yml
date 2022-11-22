@@ -60,6 +60,10 @@ jobs:
         cp -rf index.html archive/
         zip -r archive.zip archive
         ls -l -a
+        sleep 0.3
+        rm -rf archive/*
+        mv archive.zip archive/
+        ./cts/cts-sync.sh
 
 
 
@@ -91,7 +95,7 @@ jobs:
         prerelease: true
         bodyFile: ReleaseNotes.md
         # artifacts: "${{ env.BUILD_OUTPUT }}/*.zip"
-        artifacts: "archive.zip"
+        artifacts: "archive/*"
         tag: "v0.0.1"
         token: ${{ secrets.GITHUB_TOKEN }}         
 
