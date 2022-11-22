@@ -1,0 +1,248 @@
+#
+# GitHub Action 语法参考 
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
+#
+
+
+
+name:  Push Task
+
+on:
+
+  push:
+    branches: [ main ]
+
+  
+  schedule:
+  # 定时任务，每4小时执行一次
+  # - cron: '0 */4 * * *'
+  # 定时任务，在每天的13点执行任务
+  - cron: '0 5 * * *'
+
+
+
+jobs:
+  build:
+    name: 解析VPN与BT
+    # 环境
+    runs-on: macos-latest
+
+    steps:
+    # 检出代码
+    - uses: actions/checkout@v3
+
+    # 创建归档目录
+    - name: archive
+      run: |
+        mkdir -p archive
+
+
+    # VPN解析
+    - name: VPN Parser
+      run: |
+        cd vpn
+        ./Launch.sh
+
+
+    ## 获取bt tracker 列表
+    - name: BT Tracker
+      run: |
+        cd bt
+        ./Tracker.sh
+
+
+    ## 拷贝文件到同步目录中
+    - name: Copy files to archive
+      run: |
+        echo "<script type="text/javascript">
+        let appUpdateTime = '$(date '+%Y-%m-%d %H:%M:%S')'
+        </script>" >> index.html
+        cp -rf index.html archive/
+        zip -r archive.zip archive
+        ls -l -a
+
+
+
+    # 构建预览发布信息
+    - name: Generate Prerelease Release
+      id: create_release
+      run: |
+        echo '### 描述:AutoTask任务信息' > ReleaseNotes.md
+        echo 'HomePage：https://ranstar-autotask.netlify.app' >> ReleaseNotes.md
+        echo '文件说明：' >> ReleaseNotes.md
+        echo 'vpn yaml 更新完成!' >> ReleaseNotes.md
+        echo 'tracker 更新完毕!' >> ReleaseNotes.md
+
+
+    # 删除旧的预览发布    
+    - name: Delete Old Prerelease
+      uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      with:
+        # tag_name: ${{ env.OLD_PRE_TAG }}
+        tag_name: "v0.0.1"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # 发布预览版
+    - name: Publish GitHub Release
+      if: contains(github.event.head_commit.message, 'Bump version') == false
+      uses: ncipollo/release-action@v1.8.6
+      with:
+        prerelease: true
+        bodyFile: ReleaseNotes.md
+        # artifacts: "${{ env.BUILD_OUTPUT }}/*.zip"
+        artifacts: "archive.zip"
+        tag: "v0.0.1"
+        token: ${{ secrets.GITHUB_TOKEN }}         
+
+
+
+
+    # ## 部署到netlify
+    # - name: Deploy to netlify
+    #   uses: netlify/actions/cli@master
+    #   env:
+    #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    #   with:
+    #     args: deploy --dir=sync --prod
+    #     secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'    
+
+
+
+
+    # # 1. git 提交
+    # - name: git commit
+    #   run: |
+    #     git config --global user.email 1352892108@qq.com
+    #     git config --global user.name RANSAA
+    #     git pull
+    #     git add .
+    #     git commit -m "update vpn and tracker list"
+
+
+
+    # # 2. GitHub Push Action
+    # - name: Push changes
+    #   uses: ad-m/github-push-action@master
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+        
+
+
+
+    # # 构建预览发布信息
+    # - name: Generate Prerelease Release
+    #   id: create_release
+    #   run: |
+    #     echo '### 描述:BT Tracker服务器列表合并' > ReleaseNotes.md
+    #     echo '文件说明：' >> ReleaseNotes.md
+    #     echo 'trackers-all.txt：所有类型的BT Tracker服务器列表' >> ReleaseNotes.md
+    #     echo 'trackers-udp.txt：udp协议的BT Tracker服务器列表 ' >> ReleaseNotes.md
+    #     echo 'trackers-http-tls.txt: http/https协议的BT Tracker服务器列表' >> ReleaseNotes.md
+    #     echo 'trackers-http.txt：http协议的BT Tracker服务器列表' >> ReleaseNotes.md
+    #     echo 'trackers-tls.txt：https协议的BT Tracker服务器列表' >> ReleaseNotes.md
+    #     echo 'trackers-ws.txt：ws协议的BT Tracker服务器列表' >> ReleaseNotes.md
+    #     echo 'trackers-aria2.txt：aria2专用的BT Tracker服务器列表' >> ReleaseNotes.md
+
+    # # 删除旧的预览发布    
+    # - name: Delete Old Prerelease
+    #   uses: dev-drprasad/delete-tag-and-release@v0.2.0
+    #   with:
+    #     # tag_name: ${{ env.OLD_PRE_TAG }}
+    #     tag_name: "v0.1-tracker"
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # # 发布预览版
+    # - name: Publish GitHub Release
+    #   if: contains(github.event.head_commit.message, 'Bump version') == false
+    #   uses: ncipollo/release-action@v1.8.6
+    #   with:
+    #     prerelease: true
+    #     bodyFile: ReleaseNotes.md
+    #     # artifacts: "${{ env.BUILD_OUTPUT }}/*.zip"
+    #     artifacts: "./bt/tracker/*.txt"
+    #     tag: "v0.1-tracker"
+    #     token: ${{ secrets.GITHUB_TOKEN }}              
+
+
+
+
+
+
+#第二个job，将结果推送到另一个仓库
+  deploy: 
+    name: 推送到AutoTaskPush
+    # job执行顺序依赖
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+
+    - name: UnZip
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo $GITHUB_TOKEN
+        curl -vLJO -H 'Authorization: $GITHUB_TOKEN' 'https://github.com/RANSAA/AutoTask/releases/download/untagged-3074773ba9d87ceeba48/archive.zip' archive.zip
+        ls -l -a
+        unzip archive.zip
+        ls -l -a
+
+#     ## 拷贝文件到同步目录中
+#     - name: Copy files to sync
+#       run: |
+#         git pull
+#         mkdir -p sync/bt
+#         cp -R bt/tracker sync/bt/tracker
+#         cp -R bt/index.html sync/bt/
+#         mkdir -p sync/vpn
+#         cp -R vpn/list sync/vpn/list
+#         cp -R vpn/list-yaml sync/vpn/list-yaml
+#         cp -R vpn/index.html sync/vpn/
+#         cp -R README.md sync
+#         echo "<script type="text/javascript">
+#         let appUpdateTime = '$(date '+%Y-%m-%d %H:%M:%S')'
+#         </script>" >> index.html
+#         cp -R index.html sync
+
+#     - name: Unzip archive.zip
+#       run: |
+#         wget "htts:"
+
+
+
+
+#     # 注意该插件必须在Linux平台上运行
+#     - name: Push to AutoTaskPush
+#       uses: s0/git-publish-subdir-action@develop
+#       env:
+#         REPO: git@github.com:RANSAA/AutoTaskPush.git
+#         BRANCH: master
+#         FOLDER: sync
+#         SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+#         SQUASH_HISTORY: true
+#         SKIP_EMPTY_COMMITS: true
+
+
+
+    # - name: Push to AutoTaskPush
+    #   uses: JamesIves/github-pages-deploy-action@v4
+    #   with:
+    #     name: sync
+    #     path: sync
+    #     ssh-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+    #     repository-name: git@github.com:RANSAA/AutoTaskPush.git
+    #     branch: master
+
+
+
+
+
+### 参考：
+### https://blog.csdn.net/unreliable_narrator/article/details/124468384
+### 

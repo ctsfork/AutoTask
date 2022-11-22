@@ -1,0 +1,21 @@
+HTTP/2 200 
+alt-svc: h3=":443";ma=86400,h3-29=":443";ma=86400,h3-27=":443";ma=86400
+access-control-allow-origin: *
+access-control-expose-headers: *
+timing-allow-origin: *
+cache-control: public, max-age=604800, s-maxage=43200
+cross-origin-resource-policy: cross-origin
+x-content-type-options: nosniff
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+x-jsd-version: master
+x-jsd-version-type: branch
+content-type: application/octet-stream
+etag: W/"59ec-592uWs6HX8awrn7bQGk2On2PqAA"
+accept-ranges: bytes
+date: Tue, 23 Aug 2022 05:45:36 GMT
+age: 16408
+x-served-by: cache-fra19160-FRA, cache-hkg17921-HKG
+x-cache: MISS, HIT
+vary: Accept-Encoding
+content-length: 23020
+

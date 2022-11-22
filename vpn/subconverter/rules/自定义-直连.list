@@ -1,0 +1,35 @@
+# 内容：自定义直连规则
+# 主要是有些国内，国外的网站使用代理时无法访问，所以需要添加到该直连规则中
+DOMAIN-SUFFIX,netlify.com
+DOMAIN-SUFFIX,app.netlify.com
+DOMAIN-SUFFIX,fir-im.netlify.app
+DOMAIN-SUFFIX,swiftui-views.netlify.app
+DOMAIN-SUFFIX,learn-swiftui.netlify.app
+DOMAIN-SUFFIX,ranstar-res.netlify.app
+DOMAIN-SUFFIX,ranstar-tmp.netlify.app
+DOMAIN-SUFFIX,anlinux.netlify.app
+DOMAIN-SUFFIX,ranstar-autotask.netlify.app
+DOMAIN-SUFFIX,flutter-cn.netlify.app
+DOMAIN-SUFFIX,swiftgg.netlify.app
+DOMAIN-SUFFIX,noval.netlify.app
+DOMAIN-SUFFIX,ranstar-font.netlify.app
+DOMAIN-SUFFIX,ranstar-picture.netlify.app
+DOMAIN-SUFFIX,ranstar-music.netlify.app
+DOMAIN-SUFFIX,ranstar-mv.netlify.app
+DOMAIN-SUFFIX,ranstar-video.netlify.app
+DOMAIN-SUFFIX,ranstar-av.netlify.app
+DOMAIN-SUFFIX,ranstar-picture-cdn1.netlify.app
+###  App 破解
+# CodeRunner
+DOMAIN-SUFFIX,www.coderunnerapp.com
+DOMAIN-SUFFIX,coderunnerapp.com
+# 010 Editor
+DOMAIN-SUFFIX,www.sweetscape.com
+# FileMaker Pro
+DOMAIN-SUFFIX,crystalidea.com
+DOMAIN-SUFFIX,www.crystalidea.com
+DOMAIN-SUFFIX,v3pro.crystalidea.com
+DOMAIN-SUFFIX,windows10.microdone.cn
+# Hopper Disassembler
+DOMAIN-SUFFIX,flashcode.cryptic-apps.com
+

@@ -1,0 +1,2 @@
+ws://hub.bugout.link:80/announce
+wss://tracker.openwebtorrent.com:443/announce

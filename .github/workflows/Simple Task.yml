@@ -1,0 +1,44 @@
+#
+# GitHub Action 语法参考 
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
+#
+
+
+
+name:  Simple Task
+
+on:
+  
+  # push:
+  #   branches: [ main ]
+
+  # pull_request:
+  #   branches: [ main ]
+  
+  schedule:
+  # 定时任务，在每天的5点执行任务
+    - cron: '0 21 * * *'
+
+  # 定时任务，每周日20点
+  # - cron: '0 12 * * 0'
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Swift 签到
+      run: |
+        swift swift/Sources/Task/mac69签到.swift
+        swift swift/Sources/Task/macOrsoon签到.swift
+
+
+    - name: Cloud Keep Active
+      run: |
+        cd cloud
+        ./cloudKeep-cts.sh
+
+
